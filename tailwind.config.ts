@@ -61,7 +61,13 @@ export default {
 					'accent-foreground': 'hsl(var(--sidebar-accent-foreground))',
 					border: 'hsl(var(--sidebar-border))',
 					ring: 'hsl(var(--sidebar-ring))'
-				}
+				},
+				// Garuda Dhruvam Foundation Custom Colors
+				sandalwood: 'hsl(var(--sandalwood))',
+				'clay-red': 'hsl(var(--clay-red))',
+				indigo: 'hsl(var(--indigo))',
+				turmeric: 'hsl(var(--turmeric))',
+				ivory: 'hsl(var(--ivory))'
 			},
 			borderRadius: {
 				lg: 'var(--radius)',
