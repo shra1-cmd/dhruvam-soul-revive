@@ -14,42 +14,6 @@ export type Database = {
   }
   public: {
     Tables: {
-      admin_users: {
-        Row: {
-          created_at: string
-          email: string
-          full_name: string
-          id: string
-          is_active: boolean
-          password_hash: string
-          role: string
-          updated_at: string
-          user_id: string | null
-        }
-        Insert: {
-          created_at?: string
-          email: string
-          full_name: string
-          id?: string
-          is_active?: boolean
-          password_hash: string
-          role?: string
-          updated_at?: string
-          user_id?: string | null
-        }
-        Update: {
-          created_at?: string
-          email?: string
-          full_name?: string
-          id?: string
-          is_active?: boolean
-          password_hash?: string
-          role?: string
-          updated_at?: string
-          user_id?: string | null
-        }
-        Relationships: []
-      }
       donations: {
         Row: {
           amount: number
@@ -171,15 +135,7 @@ export type Database = {
           title?: string
           updated_at?: string
         }
-        Relationships: [
-          {
-            foreignKeyName: "events_created_by_fkey"
-            columns: ["created_by"]
-            isOneToOne: false
-            referencedRelation: "admin_users"
-            referencedColumns: ["id"]
-          },
-        ]
+        Relationships: []
       }
       gallery: {
         Row: {
@@ -224,15 +180,7 @@ export type Database = {
           updated_at?: string
           uploaded_by?: string | null
         }
-        Relationships: [
-          {
-            foreignKeyName: "gallery_uploaded_by_fkey"
-            columns: ["uploaded_by"]
-            isOneToOne: false
-            referencedRelation: "admin_users"
-            referencedColumns: ["id"]
-          },
-        ]
+        Relationships: []
       }
       programs: {
         Row: {
@@ -289,15 +237,7 @@ export type Database = {
           title?: string
           updated_at?: string
         }
-        Relationships: [
-          {
-            foreignKeyName: "programs_created_by_fkey"
-            columns: ["created_by"]
-            isOneToOne: false
-            referencedRelation: "admin_users"
-            referencedColumns: ["id"]
-          },
-        ]
+        Relationships: []
       }
       stories: {
         Row: {
@@ -351,15 +291,7 @@ export type Database = {
           title?: string
           updated_at?: string
         }
-        Relationships: [
-          {
-            foreignKeyName: "stories_created_by_fkey"
-            columns: ["created_by"]
-            isOneToOne: false
-            referencedRelation: "admin_users"
-            referencedColumns: ["id"]
-          },
-        ]
+        Relationships: []
       }
       volunteers: {
         Row: {
@@ -443,15 +375,7 @@ export type Database = {
           section_name?: string
           updated_at?: string
         }
-        Relationships: [
-          {
-            foreignKeyName: "website_content_last_updated_by_fkey"
-            columns: ["last_updated_by"]
-            isOneToOne: false
-            referencedRelation: "admin_users"
-            referencedColumns: ["id"]
-          },
-        ]
+        Relationships: []
       }
     }
     Views: {

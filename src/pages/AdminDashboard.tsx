@@ -30,29 +30,29 @@ const AdminDashboard = () => {
   const navigate = useNavigate();
 
   useEffect(() => {
-    const checkAdminAuth = () => {
-      const adminSession = localStorage.getItem('admin_session');
-      if (!adminSession) {
+    const checkAuth = async () => {
+      const { data: { session } } = await supabase.auth.getSession();
+      if (!session?.user) {
         navigate('/admin/login');
         return;
       }
 
-      try {
-        const user = JSON.parse(adminSession);
-        setAdminUser(user);
-      } catch (error) {
-        localStorage.removeItem('admin_session');
-        navigate('/admin/login');
-      } finally {
-        setIsLoading(false);
-      }
+      // Set admin user from Supabase session
+      setAdminUser({
+        id: session.user.id,
+        email: session.user.email || '',
+        full_name: session.user.user_metadata?.full_name || 'Admin',
+        role: 'admin',
+        loginTime: new Date().toISOString()
+      });
+      setIsLoading(false);
     };
 
-    checkAdminAuth();
+    checkAuth();
   }, [navigate]);
 
-  const handleLogout = () => {
-    localStorage.removeItem('admin_session');
+  const handleLogout = async () => {
+    await supabase.auth.signOut();
     toast.success('Logged out successfully');
     navigate('/admin/login');
   };

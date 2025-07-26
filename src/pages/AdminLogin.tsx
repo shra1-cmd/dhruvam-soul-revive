@@ -1,4 +1,4 @@
-import { useState } from 'react';
+import { useState, useEffect } from 'react';
 import { useNavigate } from 'react-router-dom';
 import { Button } from "@/components/ui/button";
 import { Input } from "@/components/ui/input";
@@ -7,7 +7,6 @@ import { Card, CardHeader, CardTitle, CardContent } from "@/components/ui/card";
 import { toast } from "sonner";
 import { supabase } from "@/integrations/supabase/client";
 import { Eye, EyeOff, Shield } from "lucide-react";
-import bcrypt from 'bcryptjs';
 
 const AdminLogin = () => {
   const [email, setEmail] = useState('');
@@ -16,47 +15,42 @@ const AdminLogin = () => {
   const [isLoading, setIsLoading] = useState(false);
   const navigate = useNavigate();
 
+  useEffect(() => {
+    // Check if user is already logged in
+    supabase.auth.getSession().then(({ data: { session } }) => {
+      if (session?.user) {
+        navigate('/admin');
+      }
+    });
+  }, [navigate]);
+
   const handleLogin = async (e: React.FormEvent) => {
     e.preventDefault();
     setIsLoading(true);
   
     try {
-      // Check admin credentials from admin_users table
-      const { data: adminUsers, error } = await supabase
-        .from('admin_users')
-        .select('id, email, full_name, role, user_id, is_active')
-        .eq('email', email)
-        .eq('password_hash', password)
-        .eq('is_active', true);
+      console.log('Attempting login for:', email);
 
-      if (error || !adminUsers || adminUsers.length === 0) {
+      // Use Supabase Auth directly - much simpler!
+      const { data, error } = await supabase.auth.signInWithPassword({
+        email,
+        password,
+      });
+
+      if (error) {
+        console.error('Login error:', error);
         toast.error('Invalid credentials');
         setIsLoading(false);
         return;
       }
 
-      const admin = adminUsers[0];
-      
-      // Create a simple anonymous auth session to satisfy RLS
-      const { error: authError } = await supabase.auth.signInAnonymously();
-      if (authError) {
-        console.warn('Auth warning:', authError);
+      if (data.user) {
+        console.log('Login successful');
+        toast.success('Login successful!');
+        navigate('/admin');
       }
-      
-      // Save admin session to localStorage
-      localStorage.setItem('admin_session', JSON.stringify({
-        id: admin.id,
-        email: admin.email,
-        full_name: admin.full_name,
-        role: admin.role,
-        user_id: admin.user_id,
-        loginTime: new Date().toISOString(),
-      }));
-
-      toast.success(`Welcome, ${admin.full_name}!`);
-      navigate('/admin');
     } catch (err) {
-      console.error('Login error:', err);
+      console.error('Unexpected login error:', err);
       toast.error('Login failed. Please try again.');
     } finally {
       setIsLoading(false);
@@ -123,7 +117,10 @@ const AdminLogin = () => {
           </form>
           <div className="mt-6 text-center">
             <p className="text-xs text-muted-foreground">
-              Demo Credentials: admin@garudadhruvam.org / admin123
+              Create your admin account using Supabase Auth
+            </p>
+            <p className="text-xs text-muted-foreground mt-1">
+              Or sign up with email/password
             </p>
           </div>
         </CardContent>

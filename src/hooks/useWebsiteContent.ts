@@ -35,23 +35,21 @@ export const useWebsiteContent = (sectionName: string) => {
       console.log('Updating content for section:', sectionName);
       console.log('New content:', newContent);
 
-      // Get admin session from localStorage (not Supabase auth)
-      const adminSession = localStorage.getItem('admin_session');
-      if (!adminSession) {
-        console.error('No admin session found');
-        setError('Admin authentication required');
-        return { success: false, error: 'Admin authentication required' };
+      // Check if user is authenticated with Supabase
+      const { data: { session } } = await supabase.auth.getSession();
+      if (!session?.user) {
+        console.error('No authenticated user found');
+        setError('Authentication required');
+        return { success: false, error: 'Authentication required' };
       }
 
-      const adminUser = JSON.parse(adminSession);
-
-      // Update website content directly since we have admin access
+      // Update website content - RLS policy allows all authenticated users
       const { data, error } = await supabase
         .from('website_content')
         .upsert({
           section_name: sectionName,
           content: newContent,
-          last_updated_by: adminUser.id
+          last_updated_by: session.user.id
         }, {
           onConflict: 'section_name'
         });
