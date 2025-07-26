@@ -20,48 +20,24 @@ const AdminLogin = () => {
     e.preventDefault();
     setIsLoading(true);
   
-    try {
-      // Check admin credentials directly from admin_users table
-      const { data: adminUsers, error } = await supabase
-        .from('admin_users')
-        .select('id, email, full_name, role, password_hash, is_active')
-        .eq('email', email)
-        .eq('is_active', true);
-
-      if (error || !adminUsers || adminUsers.length === 0) {
-        toast.error('Invalid credentials');
-        setIsLoading(false);
-        return;
-      }
-
-      const admin = adminUsers[0];
-      
-      // Check password - admin123 is stored as plain text for demo
-      const isPasswordValid = password === admin.password_hash || password === 'admin123';
-
-      if (!isPasswordValid) {
-        toast.error('Invalid credentials');
-        setIsLoading(false);
-        return;
-      }
-
+    // Simple hardcoded admin login - no database dependency
+    if (email === 'admin@garudadhruvam.org' && password === 'admin123') {
       // Save admin session to localStorage
       localStorage.setItem('admin_session', JSON.stringify({
-        id: admin.id,
-        email: admin.email,
-        full_name: admin.full_name,
-        role: admin.role,
+        id: 'admin-001',
+        email: 'admin@garudadhruvam.org',
+        full_name: 'Admin User',
+        role: 'admin',
         loginTime: new Date().toISOString(),
       }));
 
-      toast.success(`Welcome, ${admin.full_name || 'Admin'}!`);
+      toast.success('Welcome, Admin User!');
       navigate('/admin');
-    } catch (err) {
-      console.error('Login error:', err);
-      toast.error('Login failed. Please try again.');
-    } finally {
-      setIsLoading(false);
+    } else {
+      toast.error('Invalid credentials');
     }
+    
+    setIsLoading(false);
   };
 
   return (
