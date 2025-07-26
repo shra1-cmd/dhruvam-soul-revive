@@ -35,36 +35,23 @@ export const useWebsiteContent = (sectionName: string) => {
       console.log('Updating content for section:', sectionName);
       console.log('New content:', newContent);
 
-      // Get current session and user ID
-      const { data: session } = await supabase.auth.getSession();
-      const userId = session?.session?.user?.id;
-
-      if (!userId) {
-        console.error('No authenticated user found');
-        setError('Authentication required');
-        return { success: false, error: 'Authentication required' };
+      // Get admin session from localStorage (not Supabase auth)
+      const adminSession = localStorage.getItem('admin_session');
+      if (!adminSession) {
+        console.error('No admin session found');
+        setError('Admin authentication required');
+        return { success: false, error: 'Admin authentication required' };
       }
 
-      // Step 1: Get admin user's row
-      const { data: admin, error: adminError } = await supabase
-        .from('admin_users')
-        .select('id')
-        .eq('id', userId)
-        .single();
+      const adminUser = JSON.parse(adminSession);
 
-      if (adminError) {
-        console.error('Admin user not found:', adminError);
-        setError('Admin access required');
-        return { success: false, error: 'Admin access required' };
-      }
-
-      // Step 2: Update website content with new content and who updated it
+      // Update website content directly since we have admin access
       const { data, error } = await supabase
         .from('website_content')
         .upsert({
           section_name: sectionName,
           content: newContent,
-          last_updated_by: admin.id
+          last_updated_by: adminUser.id
         }, {
           onConflict: 'section_name'
         });

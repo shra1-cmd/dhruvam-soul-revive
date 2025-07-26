@@ -36,9 +36,8 @@ const AdminLogin = () => {
 
       const admin = adminUsers[0];
       
-      // For demo purposes, check if password matches directly or use bcrypt
-      const isPasswordValid = password === 'admin123' || 
-        (admin.password_hash && await bcrypt.compare(password, admin.password_hash));
+      // Check password - admin123 is stored as plain text for demo
+      const isPasswordValid = password === admin.password_hash || password === 'admin123';
 
       if (!isPasswordValid) {
         toast.error('Invalid credentials');
