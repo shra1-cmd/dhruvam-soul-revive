@@ -20,24 +20,47 @@ const AdminLogin = () => {
     e.preventDefault();
     setIsLoading(true);
   
-    // Simple hardcoded admin login - no database dependency
-    if (email === 'admin@garudadhruvam.org' && password === 'admin123') {
+    try {
+      // Check admin credentials from admin_users table
+      const { data: adminUsers, error } = await supabase
+        .from('admin_users')
+        .select('id, email, full_name, role, user_id, is_active')
+        .eq('email', email)
+        .eq('password_hash', password)
+        .eq('is_active', true);
+
+      if (error || !adminUsers || adminUsers.length === 0) {
+        toast.error('Invalid credentials');
+        setIsLoading(false);
+        return;
+      }
+
+      const admin = adminUsers[0];
+      
+      // Create a simple anonymous auth session to satisfy RLS
+      const { error: authError } = await supabase.auth.signInAnonymously();
+      if (authError) {
+        console.warn('Auth warning:', authError);
+      }
+      
       // Save admin session to localStorage
       localStorage.setItem('admin_session', JSON.stringify({
-        id: 'admin-001',
-        email: 'admin@garudadhruvam.org',
-        full_name: 'Admin User',
-        role: 'admin',
+        id: admin.id,
+        email: admin.email,
+        full_name: admin.full_name,
+        role: admin.role,
+        user_id: admin.user_id,
         loginTime: new Date().toISOString(),
       }));
 
-      toast.success('Welcome, Admin User!');
+      toast.success(`Welcome, ${admin.full_name}!`);
       navigate('/admin');
-    } else {
-      toast.error('Invalid credentials');
+    } catch (err) {
+      console.error('Login error:', err);
+      toast.error('Login failed. Please try again.');
+    } finally {
+      setIsLoading(false);
     }
-    
-    setIsLoading(false);
   };
 
   return (
