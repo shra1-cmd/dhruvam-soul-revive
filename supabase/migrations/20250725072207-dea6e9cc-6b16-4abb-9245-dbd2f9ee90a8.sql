@@ -170,9 +170,6 @@ FOR ALL USING (true);
 CREATE POLICY "Admin users can manage all volunteers" ON public.volunteers
 FOR ALL USING (true);
 
-CREATE POLICY "Admin users can manage website content" ON public.website_content
-FOR ALL USING (true);
-
 -- Public read access for frontend
 CREATE POLICY "Public can read published programs" ON public.programs
 FOR SELECT USING (status = 'active');
@@ -244,3 +241,23 @@ INSERT INTO public.website_content (section_name, content) VALUES
 ('hero', '{"title": "Reviving the Soul of Bharat", "subtitle": "Empowering communities through cultural heritage, women empowerment, and sustainable development", "cta_primary": "Join the Movement", "cta_secondary": "Explore Our Work"}'),
 ('mission', '{"mission": "To empower India through its roots — culture, women, sustainability. We believe in enabling rural transformation by honoring ancient wisdom.", "vision": "A self-reliant Bharat where ancient wisdom uplifts modern life — one village, one temple, one woman at a time.", "philosophy": "We believe transformation begins from within villages, not from the top down. Local wisdom, collective action, and cultural roots form the foundation of inclusive change."}'),
 ('stats', '{"villages": 100, "women_skilled": 2000, "temples_revived": 20, "programs_active": 15}');
+
+-- Add user_id column to admin_users
+ALTER TABLE public.admin_users
+ADD COLUMN user_id uuid UNIQUE;
+
+-- (Optional) If you already know the Supabase Auth user id for your admin(s), update it here:
+-- UPDATE public.admin_users SET user_id = 'your-supabase-auth-user-id' WHERE email = 'admin@example.com';
+
+DROP POLICY IF EXISTS "Admin users can manage website content" ON public.website_content;
+
+CREATE POLICY "Only admins can update website content"
+  ON public.website_content
+  FOR UPDATE
+  USING (
+    EXISTS (
+      SELECT 1 FROM public.admin_users
+      WHERE admin_users.user_id = auth.uid()
+      AND admin_users.is_active = true
+    )
+  );

@@ -1,7 +1,26 @@
 import React, { useState } from 'react';
 import { Target, Eye, Heart } from 'lucide-react';
 
-const MissionVisionSection = () => {
+interface MissionVisionContent {
+  mission?: {
+    heading?: string;
+    text?: string;
+  };
+  vision?: {
+    heading?: string;
+    text?: string;
+  };
+  philosophy?: {
+    heading?: string;
+    text?: string;
+  };
+}
+
+interface MissionVisionSectionProps {
+  content?: MissionVisionContent;
+}
+
+const MissionVisionSection: React.FC<MissionVisionSectionProps> = ({ content }) => {
   const [activeTab, setActiveTab] = useState(0);
 
   const tabs = [
@@ -10,8 +29,8 @@ const MissionVisionSection = () => {
       title: 'Mission',
       icon: Target,
       content: {
-        heading: 'Our Mission',
-        text: 'To empower India through its roots — culture, women, sustainability. We believe in enabling rural transformation by honoring ancient wisdom while building pathways to modern prosperity.'
+        heading: content?.mission?.heading || 'Our Mission',
+        text: content?.mission?.text || 'To empower India through its roots — culture, women, sustainability. We believe in enabling rural transformation by honoring ancient wisdom while building pathways to modern prosperity.'
       }
     },
     {
@@ -19,8 +38,8 @@ const MissionVisionSection = () => {
       title: 'Vision',
       icon: Eye,
       content: {
-        heading: 'Our Vision',
-        text: 'A self-reliant Bharat where ancient wisdom uplifts modern life — one village, one temple, one woman at a time. Where cultural heritage becomes the foundation for sustainable development.'
+        heading: content?.vision?.heading || 'Our Vision',
+        text: content?.vision?.text || 'A self-reliant Bharat where ancient wisdom uplifts modern life — one village, one temple, one woman at a time. Where cultural heritage becomes the foundation for sustainable development.'
       }
     },
     {
@@ -28,8 +47,8 @@ const MissionVisionSection = () => {
       title: 'Philosophy of Change',
       icon: Heart,
       content: {
-        heading: 'Philosophy of Change',
-        text: 'We believe transformation begins from within villages, not from the top down. Local wisdom, collective action, and cultural roots form the foundation of inclusive and lasting change.'
+        heading: content?.philosophy?.heading || 'Philosophy of Change',
+        text: content?.philosophy?.text || 'We believe transformation begins from within villages, not from the top down. Local wisdom, collective action, and cultural roots form the foundation of inclusive and lasting change.'
       }
     }
   ];

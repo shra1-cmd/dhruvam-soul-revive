@@ -53,6 +53,14 @@ const Header = () => {
               {item.label}
             </a>
           ))}
+          {/* Admin Login link for desktop */}
+          <a
+            href="/admin/login"
+            className="text-xs md:text-sm font-light text-muted-foreground hover:text-primary px-2 py-1 border border-transparent hover:border-primary rounded transition-colors duration-200 ml-2"
+            style={{ textDecoration: 'underline', opacity: 0.7 }}
+          >
+            Admin Login
+          </a>
         </nav>
 
         {/* CTA & Mobile Menu */}
@@ -87,6 +95,15 @@ const Header = () => {
                 {item.label}
               </a>
             ))}
+            {/* Admin Login link for mobile */}
+            <a
+              href="/admin/login"
+              onClick={() => setIsMobileMenuOpen(false)}
+              className="block py-3 text-base font-light text-muted-foreground hover:text-primary border-b border-border/50 transition-colors rounded-md mt-2"
+              style={{ textDecoration: 'underline', opacity: 0.7 }}
+            >
+              Admin Login
+            </a>
             <button className="btn-turmeric w-full mt-4 flex items-center justify-center gap-2">
               <Heart className="w-4 h-4" />
               Donate

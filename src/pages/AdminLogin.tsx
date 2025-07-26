@@ -15,41 +15,50 @@ const AdminLogin = () => {
   const [isLoading, setIsLoading] = useState(false);
   const navigate = useNavigate();
 
-  const handleLogin = async (e: React.FormEvent) => {
+  const handleLogin = async (e) => {
     e.preventDefault();
     setIsLoading(true);
-
-    try {
-      // Check admin credentials
-      const { data, error } = await supabase
-        .from('admin_users')
-        .select('*')
-        .eq('email', email)
-        .eq('is_active', true)
-        .single();
-
-      if (error || !data) {
-        toast.error('Invalid credentials');
-        return;
-      }
-
-      // Store admin session in localStorage
-      localStorage.setItem('admin_session', JSON.stringify({
-        id: data.id,
-        email: data.email,
-        full_name: data.full_name,
-        role: data.role,
-        loginTime: new Date().toISOString()
-      }));
-
-      toast.success(`Welcome back, ${data.full_name}!`);
-      navigate('/admin');
-    } catch (error) {
-      toast.error('Login failed. Please try again.');
-    } finally {
+  
+    // 1. Sign in with Supabase Auth
+    const { data, error } = await supabase.auth.signInWithPassword({
+      email,
+      password,
+    });
+  
+    if (error || !data?.user) {
+      toast.error('Invalid credentials');
       setIsLoading(false);
+      return;
     }
+  
+    // 2. Check if this user is an active admin
+    const { data: admin, error: adminError } = await supabase
+      .from('admin_users')
+      .select('*')
+      .eq('user_id', data.user.id)
+      .eq('is_active', true)
+      .single();
+  
+    if (adminError || !admin) {
+      toast.error('You are not authorized as an admin.');
+      setIsLoading(false);
+      return;
+    }
+  
+    // ✅ Save to localStorage
+    localStorage.setItem('admin_session', JSON.stringify({
+      id: admin.id,
+      email: admin.email,
+      full_name: admin.full_name,
+      role: admin.role,
+      loginTime: new Date().toISOString(),
+    }));
+  
+    toast.success(`Welcome, ${admin.full_name || 'Admin'}!`);
+    setIsLoading(false);
+    navigate('/admin');
   };
+  
 
   return (
     <div className="min-h-screen bg-gradient-to-br from-ivory to-sandalwood/20 flex items-center justify-center p-6">
@@ -67,7 +76,6 @@ const AdminLogin = () => {
             Garuda Dhruvam Foundation
           </p>
         </CardHeader>
-        
         <CardContent>
           <form onSubmit={handleLogin} className="space-y-4">
             <div>
@@ -82,7 +90,6 @@ const AdminLogin = () => {
                 className="mt-1"
               />
             </div>
-            
             <div>
               <Label htmlFor="password">Password</Label>
               <div className="relative mt-1">
@@ -103,7 +110,6 @@ const AdminLogin = () => {
                 </button>
               </div>
             </div>
-            
             <Button 
               type="submit" 
               className="w-full bg-primary hover:bg-primary/90"
@@ -112,7 +118,6 @@ const AdminLogin = () => {
               {isLoading ? 'Signing in...' : 'Sign In'}
             </Button>
           </form>
-          
           <div className="mt-6 text-center">
             <p className="text-xs text-muted-foreground">
               Demo Credentials: admin@garudadhruvam.org / admin123
