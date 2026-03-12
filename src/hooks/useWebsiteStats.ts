@@ -10,9 +10,8 @@ export const useWebsiteStats = () => {
     try {
       setLoading(true);
       const { data, error } = await supabase
-        .from('website_content')
+        .from('website_stats')
         .select('*')
-        .eq('section_name', 'stats')
         .single();
 
       if (error && error.code !== 'PGRST116') {
@@ -39,10 +38,10 @@ export const useWebsiteStats = () => {
       }
 
       const { data, error } = await supabase
-        .from('website_content')
+        .from('website_stats')
         .upsert({
+          ...newData,
           section_name: 'stats',
-          content: newData,
         }, {
           onConflict: 'section_name'
         });
@@ -53,7 +52,7 @@ export const useWebsiteStats = () => {
         return { success: false, error: error.message };
       }
 
-      setStatsData({ section_name: 'stats', content: newData });
+      setStatsData({ ...newData, section_name: 'stats' });
       setError(null);
       return { success: true, data };
     } catch (err) {

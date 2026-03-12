@@ -1,0 +1,13 @@
+[build]
+  publish = "dist"
+  command = "npm install --include=dev && npm run build:prod"
+
+[build.environment]
+  NODE_VERSION = "18"
+  NODE_ENV = "production"
+  CI = "true"
+
+[[redirects]]
+  from = "/*"
+  to = "/index.html"
+  status = 200 

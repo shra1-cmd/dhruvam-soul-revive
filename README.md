@@ -1,75 +1,134 @@
-# Welcome to your Lovable project
+# Garuda Dhhruvam NGO Website
 
-_(Test commit: successfully pushed from local repository)_
+A modern, responsive website for Garuda Dhhruvam NGO with donation functionality and admin dashboard.
 
-## Project info
+## 🚀 Quick Start
 
-**URL**: https://lovable.dev/projects/2ee3490b-d3b1-434b-ab24-d34a3cf66634
+### Local Development
 
-## How can I edit this code?
+1. **Clone the repository**
+   ```bash
+   git clone <repository-url>
+   cd my-simple-webspace-63
+   ```
 
-There are several ways of editing your application.
+2. **Install dependencies**
+   ```bash
+   npm install
+   ```
 
-**Use Lovable**
+3. **Set up environment variables**
+   ```bash
+   cp env.example .env
+   ```
+   Edit `.env` with your Supabase and Razorpay credentials.
 
-Simply visit the [Lovable Project](https://lovable.dev/projects/2ee3490b-d3b1-434b-ab24-d34a3cf66634) and start prompting.
+4. **Start development server**
+   ```bash
+   npm run dev
+   ```
 
-Changes made via Lovable will be committed automatically to this repo.
+5. **Open your browser**
+   Navigate to `http://localhost:8080`
 
-**Use your preferred IDE**
+## 🌐 Netlify Deployment
 
-If you want to work locally using your own IDE, you can clone this repo and push changes. Pushed changes will also be reflected in Lovable.
+### Prerequisites
+- Netlify account
+- Supabase project configured
 
-The only requirement is having Node.js & npm installed - [install with nvm](https://github.com/nvm-sh/nvm#installing-and-updating)
+### Deployment Steps
 
-Follow these steps:
+1. **Connect to Netlify**
+   - Push your code to GitHub/GitLab
+   - Connect your repository to Netlify
+   - Or drag and drop the `dist` folder after building
 
-```sh
-# Step 1: Clone the repository using the project's Git URL.
-git clone <YOUR_GIT_URL>
+2. **Configure Build Settings**
+   - **Build command**: `npm run build`
+   - **Publish directory**: `dist`
+   - **Node version**: 18
 
-# Step 2: Navigate to the project directory.
-cd <YOUR_PROJECT_NAME>
+3. **Set Environment Variables**
+   In your Netlify dashboard, go to **Site settings** > **Environment variables** and add:
+   ```
+   VITE_SUPABASE_URL=https://iovkyejegqvqxejmxrla.supabase.co
+   VITE_SUPABASE_ANON_KEY=eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9.eyJpc3MiOiJzdXBhYmFzZSIsInJlZiI6Imlvdmt5ZWplZ3F2cXhlam14cmxhIiwicm9sZSI6ImFub24iLCJpYXQiOjE3NTM2OTk0ODUsImV4cCI6MjA2OTI3NTQ4NX0.Y4LFBB3fBnTdRTZDINi-9kknNFZvXmSduGXnCk4ENY8
+   VITE_RAZORPAY_TEST_KEY=rzp_test_3
+   ```
 
-# Step 3: Install the necessary dependencies.
-npm i
+4. **Update Supabase Configuration**
+   - Go to your Supabase project dashboard
+   - Navigate to **Authentication** > **Settings**
+   - Update **Site URL** to: `https://garuda2.netlify.app`
+   - Add to **Redirect URLs**: `https://garuda2.netlify.app`
 
-# Step 4: Start the development server with auto-reloading and an instant preview.
-npm run dev
+5. **Deploy**
+   - Netlify will automatically build and deploy your site
+   - Your site will be available at: `https://garuda2.netlify.app`
+
+### Troubleshooting
+
+**"Page not found" error:**
+- Ensure `_redirects` file is in the `public` directory
+- Check that environment variables are set correctly
+- Verify build logs for any errors
+
+**Authentication issues:**
+- Confirm Supabase site URL and redirect URLs are updated
+- Check that the Supabase project is accessible
+- Verify API keys are correct
+
+**Build failures:**
+- Ensure Node.js version is 18 or higher
+- Check that all dependencies are properly installed
+- Review build logs for specific error messages
+
+## 🛠️ Tech Stack
+
+- **Frontend**: React 18 + TypeScript + Vite
+- **Styling**: Tailwind CSS + shadcn/ui
+- **Payment**: Razorpay Integration
+- **Backend**: Supabase (Database + Edge Functions)
+- **Deployment**: Netlify
+- **State Management**: React Query + React Hook Form
+- **Routing**: React Router DOM
+
+## 📁 Project Structure
+
+```
+src/
+├── components/          # Reusable UI components
+├── pages/              # Page components
+├── hooks/              # Custom React hooks
+├── integrations/       # External service integrations
+├── lib/                # Utility functions
+└── types/              # TypeScript type definitions
 ```
 
-**Edit a file directly in GitHub**
+## 🔧 Available Scripts
 
-- Navigate to the desired file(s).
-- Click the "Edit" button (pencil icon) at the top right of the file view.
-- Make your changes and commit the changes.
+- `npm run dev` - Start development server
+- `npm run build` - Build for production
+- `npm run preview` - Preview production build
+- `npm run lint` - Run ESLint
 
-**Use GitHub Codespaces**
+## 📝 Environment Variables
 
-- Navigate to the main page of your repository.
-- Click on the "Code" button (green button) near the top right.
-- Select the "Codespaces" tab.
-- Click on "New codespace" to launch a new Codespace environment.
-- Edit files directly within the Codespace and commit and push your changes once you're done.
+Create a `.env` file in the root directory:
 
-## What technologies are used for this project?
+```env
+VITE_SUPABASE_URL=your_supabase_url
+VITE_SUPABASE_ANON_KEY=your_supabase_anon_key
+```
 
-This project is built with:
+## 🤝 Contributing
 
-- Vite
-- TypeScript
-- React
-- shadcn-ui
-- Tailwind CSS
+1. Fork the repository
+2. Create a feature branch
+3. Make your changes
+4. Submit a pull request
 
-## How can I deploy this project?
+## 📄 License
 
-Simply open [Lovable](https://lovable.dev/projects/2ee3490b-d3b1-434b-ab24-d34a3cf66634) and click on Share -> Publish.
-
-## Can I connect a custom domain to my Lovable project?
-
-Yes, you can!
-
-To connect a domain, navigate to Project > Settings > Domains and click Connect Domain.
-
-Read more here: [Setting up a custom domain](https://docs.lovable.dev/tips-tricks/custom-domain#step-by-step-guide)
+This project is licensed under the MIT License.

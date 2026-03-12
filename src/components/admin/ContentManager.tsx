@@ -9,12 +9,85 @@ import { useWebsiteHero } from "@/hooks/useWebsiteHero";
 import { useWebsiteMission } from "@/hooks/useWebsiteMission";
 import { useWebsiteStats } from "@/hooks/useWebsiteStats";
 import { useWebsiteContact } from "@/hooks/useWebsiteContact";
+import { useState, useEffect } from "react";
 
 const ContentManager = () => {
   const { heroData, loading: heroLoading, updateHeroData, refetch: refetchHero } = useWebsiteHero();
   const { missionData, loading: missionLoading, updateMissionData, refetch: refetchMission } = useWebsiteMission();
   const { statsData, loading: statsLoading, updateStatsData, refetch: refetchStats } = useWebsiteStats();
   const { contactData, loading: contactLoading, updateContactData, refetch: refetchContact } = useWebsiteContact();
+
+  // Local state for form inputs
+  const [localHero, setLocalHero] = useState({
+    title: '',
+    subtitle: '',
+    cta_primary: '',
+    cta_secondary: ''
+  });
+
+  const [localMission, setLocalMission] = useState({
+    mission_text: '',
+    vision: '',
+    philosophy: ''
+  });
+
+  const [localStats, setLocalStats] = useState({
+    villages: 0,
+    women_skilled: 0,
+    temples_revived: 0,
+    programs_active: 0
+  });
+
+  const [localContact, setLocalContact] = useState({
+    email: '',
+    phone: '',
+    address: '',
+    office_hours: ''
+  });
+
+  // Update local state when data is fetched
+  useEffect(() => {
+    if (heroData) {
+      setLocalHero({
+        title: heroData.title || '',
+        subtitle: heroData.subtitle || '',
+        cta_primary: heroData.cta_primary || '',
+        cta_secondary: heroData.cta_secondary || ''
+      });
+    }
+  }, [heroData]);
+
+  useEffect(() => {
+    if (missionData) {
+      setLocalMission({
+        mission_text: missionData.mission_text || '',
+        vision: missionData.vision || '',
+        philosophy: missionData.philosophy || ''
+      });
+    }
+  }, [missionData]);
+
+  useEffect(() => {
+    if (statsData) {
+      setLocalStats({
+        villages: statsData.villages || 0,
+        women_skilled: statsData.women_skilled || 0,
+        temples_revived: statsData.temples_revived || 0,
+        programs_active: statsData.programs_active || 0
+      });
+    }
+  }, [statsData]);
+
+  useEffect(() => {
+    if (contactData) {
+      setLocalContact({
+        email: contactData.email || '',
+        phone: contactData.phone || '',
+        address: contactData.address || '',
+        office_hours: contactData.office_hours || ''
+      });
+    }
+  }, [contactData]);
 
   const isLoading = heroLoading || missionLoading || statsLoading || contactLoading;
 
@@ -26,12 +99,7 @@ const ContentManager = () => {
   };
 
   const handleHeroSave = async () => {
-    const result = await updateHeroData({
-      title: heroData?.content?.title || '',
-      subtitle: heroData?.content?.subtitle || '',
-      cta_primary: heroData?.content?.cta_primary || '',
-      cta_secondary: heroData?.content?.cta_secondary || ''
-    });
+    const result = await updateHeroData(localHero);
     
     if (result.success) {
       toast.success('Hero section updated successfully');
@@ -41,11 +109,7 @@ const ContentManager = () => {
   };
 
   const handleMissionSave = async () => {
-    const result = await updateMissionData({
-      mission_text: missionData?.content?.mission_text || '',
-      vision: missionData?.content?.vision || '',
-      philosophy: missionData?.content?.philosophy || ''
-    });
+    const result = await updateMissionData(localMission);
     
     if (result.success) {
       toast.success('Mission section updated successfully');
@@ -55,12 +119,7 @@ const ContentManager = () => {
   };
 
   const handleStatsSave = async () => {
-    const result = await updateStatsData({
-      villages: statsData?.content?.villages || 0,
-      women_skilled: statsData?.content?.women_skilled || 0,
-      temples_revived: statsData?.content?.temples_revived || 0,
-      programs_active: statsData?.content?.programs_active || 0
-    });
+    const result = await updateStatsData(localStats);
     
     if (result.success) {
       toast.success('Statistics updated successfully');
@@ -70,12 +129,7 @@ const ContentManager = () => {
   };
 
   const handleContactSave = async () => {
-    const result = await updateContactData({
-      email: contactData?.content?.email || '',
-      phone: contactData?.content?.phone || '',
-      address: contactData?.content?.address || '',
-      office_hours: contactData?.content?.office_hours || ''
-    });
+    const result = await updateContactData(localContact);
     
     if (result.success) {
       toast.success('Contact information updated successfully');
@@ -111,8 +165,8 @@ const ContentManager = () => {
             <Label htmlFor="hero_title">Main Title</Label>
             <Input
               id="hero_title"
-              value={heroData?.content?.title || ''}
-              onChange={(e) => updateHeroData({ ...heroData, content: { ...heroData?.content, title: e.target.value } })}
+              value={localHero.title}
+              onChange={(e) => setLocalHero({ ...localHero, title: e.target.value })}
               placeholder="Main hero title"
             />
           </div>
@@ -120,8 +174,8 @@ const ContentManager = () => {
             <Label htmlFor="hero_subtitle">Subtitle</Label>
             <Textarea
               id="hero_subtitle"
-              value={heroData?.content?.subtitle || ''}
-              onChange={(e) => updateHeroData({ ...heroData, content: { ...heroData?.content, subtitle: e.target.value } })}
+              value={localHero.subtitle}
+              onChange={(e) => setLocalHero({ ...localHero, subtitle: e.target.value })}
               placeholder="Hero subtitle"
               rows={2}
             />
@@ -131,8 +185,8 @@ const ContentManager = () => {
               <Label htmlFor="hero_cta_primary">Primary CTA Text</Label>
               <Input
                 id="hero_cta_primary"
-                value={heroData?.content?.cta_primary || ''}
-                onChange={(e) => updateHeroData({ ...heroData, content: { ...heroData?.content, cta_primary: e.target.value } })}
+                value={localHero.cta_primary}
+                onChange={(e) => setLocalHero({ ...localHero, cta_primary: e.target.value })}
                 placeholder="Primary button text"
               />
             </div>
@@ -140,8 +194,8 @@ const ContentManager = () => {
               <Label htmlFor="hero_cta_secondary">Secondary CTA Text</Label>
               <Input
                 id="hero_cta_secondary"
-                value={heroData?.content?.cta_secondary || ''}
-                onChange={(e) => updateHeroData({ ...heroData, content: { ...heroData?.content, cta_secondary: e.target.value } })}
+                value={localHero.cta_secondary}
+                onChange={(e) => setLocalHero({ ...localHero, cta_secondary: e.target.value })}
                 placeholder="Secondary button text"
               />
             </div>
@@ -163,8 +217,8 @@ const ContentManager = () => {
             <Label htmlFor="mission">Mission</Label>
             <Textarea
               id="mission"
-              value={missionData?.content?.mission_text || ''}
-              onChange={(e) => updateMissionData({ ...missionData, content: { ...missionData?.content, mission_text: e.target.value } })}
+              value={localMission.mission_text}
+              onChange={(e) => setLocalMission({ ...localMission, mission_text: e.target.value })}
               placeholder="Organization mission"
               rows={3}
             />
@@ -173,8 +227,8 @@ const ContentManager = () => {
             <Label htmlFor="vision">Vision</Label>
             <Textarea
               id="vision"
-              value={missionData?.content?.vision || ''}
-              onChange={(e) => updateMissionData({ ...missionData, content: { ...missionData?.content, vision: e.target.value } })}
+              value={localMission.vision}
+              onChange={(e) => setLocalMission({ ...localMission, vision: e.target.value })}
               placeholder="Organization vision"
               rows={3}
             />
@@ -183,8 +237,8 @@ const ContentManager = () => {
             <Label htmlFor="philosophy">Philosophy</Label>
             <Textarea
               id="philosophy"
-              value={missionData?.content?.philosophy || ''}
-              onChange={(e) => updateMissionData({ ...missionData, content: { ...missionData?.content, philosophy: e.target.value } })}
+              value={localMission.philosophy}
+              onChange={(e) => setLocalMission({ ...localMission, philosophy: e.target.value })}
               placeholder="Organization philosophy"
               rows={3}
             />
@@ -208,8 +262,8 @@ const ContentManager = () => {
               <Input
                 id="villages"
                 type="number"
-                value={statsData?.content?.villages || 0}
-                onChange={(e) => updateStatsData({ ...statsData, content: { ...statsData?.content, villages: parseInt(e.target.value) || 0 } })}
+                value={localStats.villages}
+                onChange={(e) => setLocalStats({ ...localStats, villages: parseInt(e.target.value) || 0 })}
               />
             </div>
             <div>
@@ -217,8 +271,8 @@ const ContentManager = () => {
               <Input
                 id="women_skilled"
                 type="number"
-                value={statsData?.content?.women_skilled || 0}
-                onChange={(e) => updateStatsData({ ...statsData, content: { ...statsData?.content, women_skilled: parseInt(e.target.value) || 0 } })}
+                value={localStats.women_skilled}
+                onChange={(e) => setLocalStats({ ...localStats, women_skilled: parseInt(e.target.value) || 0 })}
               />
             </div>
             <div>
@@ -226,8 +280,8 @@ const ContentManager = () => {
               <Input
                 id="temples_revived"
                 type="number"
-                value={statsData?.content?.temples_revived || 0}
-                onChange={(e) => updateStatsData({ ...statsData, content: { ...statsData?.content, temples_revived: parseInt(e.target.value) || 0 } })}
+                value={localStats.temples_revived}
+                onChange={(e) => setLocalStats({ ...localStats, temples_revived: parseInt(e.target.value) || 0 })}
               />
             </div>
             <div>
@@ -235,8 +289,8 @@ const ContentManager = () => {
               <Input
                 id="programs_active"
                 type="number"
-                value={statsData?.content?.programs_active || 0}
-                onChange={(e) => updateStatsData({ ...statsData, content: { ...statsData?.content, programs_active: parseInt(e.target.value) || 0 } })}
+                value={localStats.programs_active}
+                onChange={(e) => setLocalStats({ ...localStats, programs_active: parseInt(e.target.value) || 0 })}
               />
             </div>
           </div>
@@ -259,17 +313,17 @@ const ContentManager = () => {
               <Input
                 id="contact_email"
                 type="email"
-                value={contactData?.content?.email || ''}
-                onChange={(e) => updateContactData({ ...contactData, content: { ...contactData?.content, email: e.target.value } })}
-                placeholder="hello@garudadhruvam.org"
+                value={localContact.email}
+                onChange={(e) => setLocalContact({ ...localContact, email: e.target.value })}
+                placeholder="hello@garudaDhhruvam.org"
               />
             </div>
             <div>
               <Label htmlFor="contact_phone">Phone</Label>
               <Input
                 id="contact_phone"
-                value={contactData?.content?.phone || ''}
-                onChange={(e) => updateContactData({ ...contactData, content: { ...contactData?.content, phone: e.target.value } })}
+                value={localContact.phone}
+                onChange={(e) => setLocalContact({ ...localContact, phone: e.target.value })}
                 placeholder="+91 98765 43210"
               />
             </div>
@@ -278,8 +332,8 @@ const ContentManager = () => {
             <Label htmlFor="contact_address">Address</Label>
             <Textarea
               id="contact_address"
-              value={contactData?.content?.address || ''}
-              onChange={(e) => updateContactData({ ...contactData, content: { ...contactData?.content, address: e.target.value } })}
+              value={localContact.address}
+              onChange={(e) => setLocalContact({ ...localContact, address: e.target.value })}
               placeholder="Organization address"
               rows={2}
             />
@@ -288,8 +342,8 @@ const ContentManager = () => {
             <Label htmlFor="office_hours">Office Hours</Label>
             <Input
               id="office_hours"
-              value={contactData?.content?.office_hours || ''}
-              onChange={(e) => updateContactData({ ...contactData, content: { ...contactData?.content, office_hours: e.target.value } })}
+              value={localContact.office_hours}
+              onChange={(e) => setLocalContact({ ...localContact, office_hours: e.target.value })}
               placeholder="Mon-Fri 9:00 AM - 5:00 PM"
             />
           </div>

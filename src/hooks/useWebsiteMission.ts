@@ -10,9 +10,8 @@ export const useWebsiteMission = () => {
     try {
       setLoading(true);
       const { data, error } = await supabase
-        .from('website_content')
+        .from('website_mission')
         .select('*')
-        .eq('section_name', 'mission')
         .single();
 
       if (error && error.code !== 'PGRST116') {
@@ -39,10 +38,10 @@ export const useWebsiteMission = () => {
       }
 
       const { data, error } = await supabase
-        .from('website_content')
+        .from('website_mission')
         .upsert({
+          ...newData,
           section_name: 'mission',
-          content: newData,
         }, {
           onConflict: 'section_name'
         });
@@ -53,7 +52,7 @@ export const useWebsiteMission = () => {
         return { success: false, error: error.message };
       }
 
-      setMissionData({ section_name: 'mission', content: newData });
+      setMissionData({ ...newData, section_name: 'mission' });
       setError(null);
       return { success: true, data };
     } catch (err) {

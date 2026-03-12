@@ -1,6 +1,23 @@
 import { useEffect, useState } from 'react';
 import { supabase } from '@/integrations/supabase/client';
 
+const getTableName = (sectionName: string) => {
+  switch (sectionName) {
+    case 'hero':
+      return 'website_hero';
+    case 'stats':
+      return 'website_stats';
+    case 'mission':
+      return 'website_mission';
+    case 'contact':
+      return 'website_contact';
+    case 'cta':
+      return 'website_hero'; // CTA is stored in hero table
+    default:
+      return 'website_hero';
+  }
+};
+
 export const useWebsiteContent = (sectionName: string) => {
   const [content, setContent] = useState(null);
   const [loading, setLoading] = useState(true);
@@ -9,17 +26,17 @@ export const useWebsiteContent = (sectionName: string) => {
   const fetchContent = async () => {
     try {
       setLoading(true);
+      const tableName = getTableName(sectionName);
       const { data, error } = await supabase
-        .from('website_content')
-        .select('content')
-        .eq('section_name', sectionName)
+        .from(tableName as any)
+        .select('*')
         .single();
 
-      if (error) {
+      if (error && error.code !== 'PGRST116') {
         console.error(`Failed to fetch ${sectionName}:`, error);
         setError(error.message);
       } else {
-        setContent(data?.content);
+        setContent(data);
         setError(null);
       }
     } catch (err) {
@@ -43,13 +60,12 @@ export const useWebsiteContent = (sectionName: string) => {
         return { success: false, error: 'Authentication required' };
       }
 
-      // Update website content - RLS policy allows all authenticated users
+      const tableName = getTableName(sectionName);
       const { data, error } = await supabase
-        .from('website_content')
+        .from(tableName as any)
         .upsert({
+          ...newContent,
           section_name: sectionName,
-          content: newContent,
-          last_updated_by: session.user.id
         }, {
           onConflict: 'section_name'
         });
@@ -61,7 +77,7 @@ export const useWebsiteContent = (sectionName: string) => {
       }
 
       console.log('Content updated successfully:', data);
-      setContent(newContent);
+      setContent({ ...newContent, section_name: sectionName });
       setError(null);
       return { success: true, data };
     } catch (err) {

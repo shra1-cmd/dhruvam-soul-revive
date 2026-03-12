@@ -10,9 +10,8 @@ export const useWebsiteContact = () => {
     try {
       setLoading(true);
       const { data, error } = await supabase
-        .from('website_content')
+        .from('website_contact')
         .select('*')
-        .eq('section_name', 'contact')
         .single();
 
       if (error && error.code !== 'PGRST116') {
@@ -39,10 +38,10 @@ export const useWebsiteContact = () => {
       }
 
       const { data, error } = await supabase
-        .from('website_content')
+        .from('website_contact')
         .upsert({
+          ...newData,
           section_name: 'contact',
-          content: newData,
         }, {
           onConflict: 'section_name'
         });
@@ -53,7 +52,7 @@ export const useWebsiteContact = () => {
         return { success: false, error: error.message };
       }
 
-      setContactData({ section_name: 'contact', content: newData });
+      setContactData({ ...newData, section_name: 'contact' });
       setError(null);
       return { success: true, data };
     } catch (err) {

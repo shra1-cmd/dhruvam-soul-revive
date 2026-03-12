@@ -10,9 +10,8 @@ export const useWebsiteHero = () => {
     try {
       setLoading(true);
       const { data, error } = await supabase
-        .from('website_content')
+        .from('website_hero')
         .select('*')
-        .eq('section_name', 'hero')
         .single();
 
       if (error && error.code !== 'PGRST116') {
@@ -39,10 +38,10 @@ export const useWebsiteHero = () => {
       }
 
       const { data, error } = await supabase
-        .from('website_content')
+        .from('website_hero')
         .upsert({
+          ...newData,
           section_name: 'hero',
-          content: newData,
         }, {
           onConflict: 'section_name'
         });
@@ -53,7 +52,7 @@ export const useWebsiteHero = () => {
         return { success: false, error: error.message };
       }
 
-      setHeroData({ section_name: 'hero', content: newData });
+      setHeroData({ ...newData, section_name: 'hero' });
       setError(null);
       return { success: true, data };
     } catch (err) {
